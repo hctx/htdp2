@@ -1,10 +1,12 @@
 Solutions to all the HTPD2 exercises
 
-Progress:
-Sections
-[][][][][][]
+Progress (4/230)
 
 Prologue[X]
 
-I Fixed-Size Data (7/115)
-
+I Fixed-Size Data (4/115)
+II Arbitrarily Large Data (0/115)
+III Abstraction (0/69)
+IV Intertwined Data (0/112)
+V Generative Recursion (0/72)
+VI Accumulators (0/45)
