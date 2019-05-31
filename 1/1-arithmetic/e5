@@ -1,0 +1,19 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname e5) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/image)
+; drawing a tree consisting of a brown rectangle and 3 green circles
+
+(place-image (circle 10 "solid" "green")
+             50 80
+             (place-image (circle 8 "solid" "green")
+                          50 70
+             (place-image (circle 6 "solid" "green")
+                          50 62
+             (place-image (rectangle 10 30 "solid" "brown")
+             50 90
+             (empty-scene 100 100)
+             )
+             )
+             )
+             )

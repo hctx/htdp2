@@ -1,0 +1,25 @@
+(define AVGPEOPLE 120)
+(define AVGPRICE 5.0)
+(define PEOPLECHANGE 15)
+(define PRICECHANGE 0.1)
+(define FIXEDCOST 180)
+(define VARCOST 0.04)
+
+(define PRICESENSITIVITY (/ PEOPLECHANGE PRICECHANGE))
+
+(define (attendees ticket-price)
+  (- AVGPEOPLE (* (- ticket-price AVGPRICE) PRICESENSITIVITY)))
+
+
+(define (revenue ticket-price)
+  (* ticket-price (attendees ticket-price)))
+
+(define (cost ticket-price)
+  (+ FIXEDCOST (* VARCOST (attendees ticket-price))))
+
+(define (profit ticket-price)
+  (- (revenue ticket-price)
+     (cost ticket-price)))
+
+
+

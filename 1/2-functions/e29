@@ -1,0 +1,60 @@
+(define AVGPEOPLE 120)
+(define AVGPRICE 5.0)
+(define PEOPLECHANGE 15)
+(define PRICECHANGE 0.1)
+(define FIXEDCOST 0)
+(define VARCOST 1.50)
+
+(define (attendees ticket-price)
+  (- AVGPEOPLE (* (- ticket-price AVGPRICE) (/ PEOPLECHANGE PRICECHANGE))))
+
+
+(define (revenue ticket-price)
+  (* ticket-price (attendees ticket-price)))
+
+(define (cost ticket-price)
+  (+ FIXEDCOST (* VARCOST (attendees ticket-price))))
+
+(define (profit ticket-price)
+  (- (revenue ticket-price)
+     (cost ticket-price)))
+
+;> (profit 1)
+;511.2
+;> (profit 2)
+;937.2
+;> (profit 3)
+;1063.2
+;> (profit 2.9) is highest profit : $1064.1
+;> (profit 4)
+;889.2
+;> (profit 5)
+;415.2
+
+(define (profit2 price)
+  (- (* (+ 120
+           (* (/ 15 0.1)
+              (- 5.0 price)))
+        price)
+     (+ 0
+        (* 1.5
+           (+ 120
+              (* (/ 15 0.1)
+                 (- 5.0 price)))))))
+
+;> (profit 3)
+;630
+;> (profit 4)
+;675
+;> (profit 5)
+;420
+;> (profit2 3)
+;630
+; MAXIMUM AT 3.6: $690 - improvements were actually negative
+;> (profit2 4)
+;675
+;> (profit2 5)
+;420
+
+
+
