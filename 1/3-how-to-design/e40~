@@ -1,0 +1,64 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname e40) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/image)
+; an image of a car is constructed. The size of the car can be adjusted based on a single point: WHEEL-RADIUS.
+
+(define WHEEL-RADIUS 5)
+(define WIDTH-OF-WORLD 200)
+(define HEIGHT-OF-WORLD (* WIDTH-OF-WORLD 0.25))
+
+(define WHEEL-DISTANCE (* WHEEL-RADIUS 9))(define WHEEL
+  (circle WHEEL-RADIUS "solid" "black"))
+
+(define SPACE
+  (rectangle (* WHEEL-RADIUS 4) (* WHEEL-RADIUS 0.01) "outline" "red"))
+
+(define BOTH-WHEELS
+  (beside WHEEL SPACE WHEEL))
+
+(define CAR-BOTTOM
+  (rectangle (* (image-width BOTH-WHEELS) 1.5) (* WHEEL-RADIUS 3) "solid" "red")
+  )
+(define CAR-TOP
+  (rectangle (* (image-width CAR-BOTTOM) 0.5) (* (image-height CAR-BOTTOM) 0.5) "solid" "red")
+  )
+
+(define CAR-BODY
+  (overlay/offset CAR-TOP (* (image-width CAR-BOTTOM) 0) (* (image-height CAR-BOTTOM) 0.75) CAR-BOTTOM)
+  )
+
+(define CAR
+  (overlay/offset BOTH-WHEELS 0 (* WHEEL-RADIUS -2) CAR-BODY)
+  )
+  
+;(place-image BOTH-WHEELS WHEEL-DISTANCE (- HEIGHT-OF-WORLD WHEEL-RADIUS) (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+(place-image CAR
+             (* (image-width CAR) 0.5)
+             (- HEIGHT-OF-WORLD (* (image-height CAR) 0.5))
+             (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+;(place-image CAR (* WIDTH-OF-WORLD 0.5) (* HEIGHT-OF-WORLD 0.5) (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+
+
+
+; keystroke-handler
+; mouse-event handler
+; end?
+
+; WorldState -> Image
+; places the image of the car x pixels from 
+; the left margin of the BACKGROUND image 
+;(define (render x)
+;  BACKGROUND)
+ 
+; WorldState -> WorldState
+; adds 3 to x to move the car right 
+;(define (tock x)
+;  x)
+
+; WorldState -> WorldState
+; launches the program from some initial state 
+;(define (main ws)
+;   (big-bang ws
+;     [on-tick tock]
+;     [to-draw render])) 

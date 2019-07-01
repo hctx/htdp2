@@ -1,0 +1,152 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname e44) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/image)
+(require 2htdp/universe)
+; an image of a car is constructed. The size of the car can be adjusted based on a single point: WHEEL-RADIUS.
+
+; DEFINE MEASUREMENTS
+(define WHEEL-RADIUS 5)
+(define WIDTH-OF-WORLD 200)
+(define HEIGHT-OF-WORLD (* WIDTH-OF-WORLD 0.25))
+(define VELOCITY 3) ; number of pixels that the car moves per clock tick
+
+; DEFINE GRAPHICS
+
+(define WHEEL-DISTANCE (* WHEEL-RADIUS 9))(define WHEEL
+  (circle WHEEL-RADIUS "solid" "black"))
+
+(define SPACE
+  (rectangle (* WHEEL-RADIUS 4) (* WHEEL-RADIUS 0.01) "outline" "red"))
+
+(define BOTH-WHEELS
+  (beside WHEEL SPACE WHEEL))
+
+(define CAR-BOTTOM
+  (rectangle (* (image-width BOTH-WHEELS) 1.5) (* WHEEL-RADIUS 3) "solid" "red")
+  )
+(define CAR-TOP
+  (rectangle (* (image-width CAR-BOTTOM) 0.5) (* (image-height CAR-BOTTOM) 0.5) "solid" "red")
+  )
+
+(define CAR-BODY
+  (overlay/offset CAR-TOP (* (image-width CAR-BOTTOM) 0) (* (image-height CAR-BOTTOM) 0.65) CAR-BOTTOM)
+  )
+
+(define CAR
+  (overlay/offset BOTH-WHEELS 0 (* WHEEL-RADIUS -2) CAR-BODY)
+  )
+  
+(define TREE
+  (underlay/xy (circle 10 "solid" "green")
+               9 15
+               (rectangle 2 20 "solid" "brown")))
+
+(define BACKGROUND
+  (place-image TREE(/ WIDTH-OF-WORLD 2) (- HEIGHT-OF-WORLD 15)
+   (empty-scene WIDTH-OF-WORLD HEIGHT-OF-WORLD))
+  )
+
+; DEFINE FUNCTIONS
+
+
+; num -> num
+; takes animation state, increases it by one
+(define (tock as)
+  (+ as 1))
+(check-expect (tock 0) 1)
+(check-expect (tock 50) 51)
+
+
+; num -> num
+; takes the x coordinate value and determines the height at which the car is placed in the image
+(define (Y-CAR x)
+ (- (/ HEIGHT-OF-WORLD 2) (* 8 (sin (/ x 10)))) )
+  
+;  (- HEIGHT-OF-WORLD (* (image-height CAR) 0.5))
+
+; num -> num
+; takes the animation state (number of ticks passed)
+; returns x-axis coordinates for place-image
+; v=x/t   x = v*t
+; t is equivalent to the animation state as
+; x is adjusted by subtracting half the image width of the car to ensure that at animation state 0, the car is invisible
+(define (x-car as)
+ (- (* as VELOCITY) (/ (image-width CAR) 2))
+  )
+
+; AnimationState -> Image
+; num -> Image
+; places the right hand side of the car x pixels from 
+; the left margin of the BACKGROUND image
+; An AnimationState is the number of clock ticks since the animation started
+; x-car determines the coordinates for x based on the number of clock ticks and the Velocity
+(define (render as)
+  (place-image CAR (x-car as) (Y-CAR (x-car as)) BACKGROUND)
+   )
+(check-expect (render 0)
+             BACKGROUND) 
+; num -> boolean
+; evaluate whether the car is out of the scene
+; The car's coordinates need to be beyond the WIDTH-OF-WORLD limit
+; as * VELOCITY = pixels on x-axis
+; x-axis pixels of the car will be equal to the length of the world + half the length of the car since the middle
+; of the car is the natural reference point
+ 
+(define (end? as)
+  (if
+     (>
+        (x-car as)
+        (+ 1 WIDTH-OF-WORLD (/ (image-width CAR) 2))
+        )
+     #true
+     #false)
+  )
+; testing dependent on as, which is a time unit
+; v = s/t
+; time = s/v = x-coordinate / VELOCITY
+; when car is in the middle of the image:
+(check-expect (end?
+               (/ (x-car (/ (/ WIDTH-OF-WORLD 2) VELOCITY)) VELOCITY)
+               )
+               #false)
+; when car is out of the frame
+(check-expect (end?
+               (+ (x-car (/ WIDTH-OF-WORLD VELOCITY)) (image-width CAR))
+              )
+                 #true)
+
+
+; WorldState Number Number String -> WorldState
+; places the car at x-mouse
+; if the given me is "button-down" 
+(define (hyper x-position-of-car x-mouse y-mouse me)
+  (cond
+    [(string=? "button-down" me) x-mouse]
+    [else x-position-of-car]))
+
+
+(check-expect (hyper 21 10 20 "enter")
+              
+              21
+              )
+
+(check-expect (hyper 21 10 20 "button-down")
+              
+              10
+              )
+
+(check-expect (hyper 42 10 20 "move")
+              42
+              )
+
+
+; WorldState -> WorldState
+; launches the program from some initial state
+(define (main s0)
+(big-bang s0
+     [on-tick tock]
+     [on-mouse hyper]
+     [to-draw render]
+     [stop-when end?]
+  ))

@@ -1,0 +1,58 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname e51) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+(require 2htdp/image)
+(require 2htdp/universe)
+
+; define visuals
+(define BACKGROUND (empty-scene 100 100))
+
+(define RED (place-image (circle 20 "solid" "red") 50 50 BACKGROUND))
+(define YELLOW (place-image (circle 20 "solid" "yellow") 50 50 BACKGROUND))
+(define GREEN (place-image (circle 20 "solid" "green") 50 50 BACKGROUND))
+
+
+; define functions
+
+; light state ls
+; changes light state based on current state
+
+(check-expect (tock "red") "yellow")
+(check-expect (tock "yellow") "green")
+(check-expect (tock "green") "yellow")
+
+(define (tock ls)
+  (cond
+    [(string=? ls "red")
+     "yellow"]
+    [(string=? ls "yellow")
+     "green"]
+    [(string=? ls "green")
+     "yellow"]
+    )
+  )
+
+
+; string -> img
+; takes light state and returns image with correct color
+
+(check-expect (render "red") RED)
+(check-expect (render "yellow") YELLOW)
+(check-expect (render "green") GREEN)
+
+(define (render ls)
+  (cond
+    [(string=? ls "red")
+    RED]
+     [(string=? ls "yellow")
+     YELLOW]
+    [(string=? ls "green")
+     GREEN]
+   )
+  )
+
+
+(big-bang "red"
+  (on-tick tock)
+  (to-draw render)
+  )
